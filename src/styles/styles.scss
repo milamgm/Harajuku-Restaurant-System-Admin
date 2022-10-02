@@ -1,0 +1,32 @@
+@use "./components/dashboard_card";
+@use "./components/sidebar";
+
+.isNotAvailable{
+    filter: opacity(0.30);
+}
+.btn-list-div{
+    display: flex;
+    @media (max-width: 801px) {
+            display: inline;
+    }
+}
+.main-div{
+    margin-top: -16px;
+    display: flex;
+    .content-div{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        .display-content{
+            margin-top: 30px;
+            width: 90%;
+            height: 90%;
+        }
+    }
+  
+    .navbar-div{
+        background-color: #212529;
+    }
+   
+    
+}

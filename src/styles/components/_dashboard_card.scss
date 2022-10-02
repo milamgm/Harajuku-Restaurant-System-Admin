@@ -1,0 +1,28 @@
+@use "../abstracts" as *;
+.card-div{
+    border: .4px solid $themeColorLightSecondary;
+    margin: 1em 0em;
+    .card-header{
+        padding: .2em;
+        background-color: $themeColorLightPrimary ;
+    }
+    .card-body{
+        padding: .7em;
+        display: flex;
+        justify-content: center;
+     .card-body-content{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+            .card-chart-div{
+                margin: 10px;
+                width: 85%;
+            }
+            .card-desc-div{
+                margin: 10px;
+                font-size: small;
+            }
+        }
+        
+    }
+}

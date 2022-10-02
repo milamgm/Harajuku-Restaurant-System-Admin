@@ -1,0 +1,60 @@
+@use "../abstracts" as *;
+
+        .sidebar{
+            background-color: $themeColorDarkSecondary;
+            margin-top: -30px;
+            height: calc(100vh - 26px);
+            width: 250px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            position: sticky;
+            .sidebar-content{
+                color: $themeColorLightQuaternary;
+                height: 600px;
+                display: flex;
+                justify-content: center;
+                .sidebar-links{
+                    line-height: 50px;
+                    width:160px;
+                    .sidebar-link{
+                        display: flex;
+                        align-items: center;
+                        &:hover {
+                            color: $themeColorLightTerciary;
+                          }
+                    }
+                    .active{
+                        color: $themeColorPrimary;
+                        &:hover {
+                            color: $themeColorPrimary;
+                          }
+                    }
+                    
+                }
+            }
+            .sidebar-footer{
+                background-color: $themeColorDarkTerciary;
+                position: absolute;
+                height: 50px;
+                width: 100%;
+                bottom: 0;
+                left: 0;
+                display: flex;
+                align-items: center;
+                flex-direction: row-reverse;
+                padding-right: 10px ;
+                color: $themeColorLightQuaternary;
+            }
+            @media (max-width: 1400px) {
+                display: none;
+            }
+        }
+.active{
+    margin-left: 0px; 
+    transition: margin-left .2s ease-in; 
+}
+.isClosed{
+    margin-left: -198px; 
+    transition: margin-left .2s ease-in; 
+}

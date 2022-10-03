@@ -13,7 +13,11 @@
 .main-div{
     margin-top: -16px;
     display: flex;
+    height: 100%;
+    width: 100%;
+    position: fixed;
     .content-div{
+        overflow-y: scroll;
         width: 100%;
         display: flex;
         justify-content: center;
@@ -23,10 +27,4 @@
             height: 90%;
         }
     }
-  
-    .navbar-div{
-        background-color: #212529;
-    }
-   
-    
 }

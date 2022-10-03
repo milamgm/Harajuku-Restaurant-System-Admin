@@ -20,7 +20,7 @@ const CompletedOrders = () => {
     });
   }, []);
   return (
-    <div>
+    <div style={{paddingBottom : "200px"}}>
       {ordersPerArrival && ordersPerArrival.map((completedOrder: IOrder) => (
         <Accordion flush className="border" key={completedOrder.order_id}>
           <Accordion.Item eventKey="0">

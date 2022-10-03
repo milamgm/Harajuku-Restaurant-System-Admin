@@ -18,7 +18,7 @@ const DeletedOrders = () => {
     });
   }, []);
   return (
-    <div>
+    <div style={{paddingBottom : "200px"}}>
       {ordersPerArrival &&
         ordersPerArrival.map((deletedOrder: IOrder) => (
           <Accordion flush className="border" key={deletedOrder.order_id}>

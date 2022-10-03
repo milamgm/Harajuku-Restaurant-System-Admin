@@ -130,7 +130,7 @@ const Products = () => {
     }*/
   }, [checkboxes]);
   return (
-    <div>
+    <div style={{paddingBottom : "200px"}}>
       <Row>
         <Col>
           <Button

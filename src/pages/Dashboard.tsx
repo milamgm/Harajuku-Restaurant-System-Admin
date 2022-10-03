@@ -6,7 +6,7 @@ import DoughnutChart from "../components/Dashboard/DoughnutChart";
 import LineCharC from "../components/Dashboard/LineCharC";
 const Dashboard = () => {
   return (
-    <div className=" dashboard">
+    <div className=" dashboard" style={{paddingBottom : "200px"}}>
       <div className="dashboard-card-div">
         <Row className="d-flex justify-content-center">
           <Col xs="12" sm="8" lg="6" xl="4">

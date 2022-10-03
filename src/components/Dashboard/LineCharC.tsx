@@ -35,7 +35,7 @@ const LineCharC = () => {
         },
       };
       
-      const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+      const labels = ['18h', '19h', '20h', '21h', '22h', '23h', '24h'];
       const data = {
         labels,
         datasets: [
@@ -43,11 +43,6 @@ const LineCharC = () => {
             label: 'Dataset 1',
             data: [36,6,75,7454,15,872,1],
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-          {
-            label: 'Dataset 2',
-            data: [343,6,72,7854,15,8756,2],
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },
         ],
       };

@@ -16,6 +16,7 @@ const AppContext = ({ children }: Props) => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [addCategoryField, setAddCategoryField] = useState(false);
+  const [analitics, setAnalitics] = useState([])
 
   const AppContextValues = {
     setInitFetchProducts,
@@ -28,6 +29,7 @@ const AppContext = ({ children }: Props) => {
     setCategories,
     addCategoryField,
     setAddCategoryField,
+    analitics
   };
   return (
     <context.Provider value={AppContextValues}>{children}</context.Provider>

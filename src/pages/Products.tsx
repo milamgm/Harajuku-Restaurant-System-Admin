@@ -1,7 +1,16 @@
 import { BiPlus, BiImport, BiExport, BiHide, BiImage } from "react-icons/Bi";
-import {MdEdit, MdDelete} from "react-icons/Md";
+import { MdEdit, MdDelete } from "react-icons/Md";
 import { GoAlert } from "react-icons/Go";
-import { Button, Row, Col, Form, Table, Modal, Alert, Container } from "react-bootstrap";
+import {
+  Button,
+  Row,
+  Col,
+  Form,
+  Table,
+  Modal,
+  Alert,
+  Container,
+} from "react-bootstrap";
 import { useEffect, useRef, useState } from "react";
 import AddProduct from "../components/AddProduct";
 import { onSnapshot, collection, setDoc, doc } from "firebase/firestore";
@@ -130,7 +139,7 @@ const Products = () => {
     }*/
   }, [checkboxes]);
   return (
-    <div style={{paddingBottom : "200px"}}>
+    <div style={{ paddingBottom: "200px" }}>
       <Row>
         <Col>
           <Button
@@ -339,8 +348,10 @@ const Products = () => {
           <Modal.Header closeButton>
             <Modal.Title>{productName}</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="modal-in">
-            <img src={productImg} width="465" />
+          <Modal.Body className="modal-body">
+            <div className="modal-in">
+              <img src={productImg} className="show-product-img" />
+            </div>
           </Modal.Body>
         </Modal>
       </div>

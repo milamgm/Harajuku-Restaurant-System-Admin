@@ -54,7 +54,7 @@
   align-items: center;
 }
 .sidebar .sidebar-content .sidebar-links .sidebar-link:hover {
-  color: rgb(255, 255, 255);
+  color: rgb(250, 250, 250);
 }
 .sidebar .sidebar-content .sidebar-links .active {
   color: rgb(255, 18, 58);
@@ -89,6 +89,19 @@
 .isClosed {
   margin-left: -198px;
   transition: margin-left 0.2s ease-in;
+}
+
+.modal-body {
+  background-color: rgb(250, 250, 250);
+  display: flex;
+  justify-content: center;
+}
+.modal-body .modal-in {
+  width: 50rem;
+  padding: 2rem;
+}
+.modal-body .modal-in .show-product-img {
+  width: 28rem;
 }
 
 .isNotAvailable {

@@ -1,5 +1,6 @@
 @use "./components/dashboard_card";
 @use "./components/sidebar";
+@use "./components/modal";
 
 .isNotAvailable{
     filter: opacity(0.30);

@@ -94,7 +94,7 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
         <Modal.Header closeButton>
           <Modal.Title>Import Products</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="modal-body">
           <div className="modal-in">
             <Form onSubmit={handleSubmit}>
               <h5>Import products from a CSV or tab-delimited TXT file.</h5>
@@ -116,8 +116,9 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
             </Form>
           </div>
         </Modal.Body>
+        <Toaster position="top-center" reverseOrder={false}/>
       </Modal>
-      <Toaster position="top-center" reverseOrder={false} />
+      
     </>
   );
 };

@@ -2,16 +2,17 @@ export const getAnalitics = (completedOrders) => {
   let analitics = {};
   const weekdays = [0, 0, 0, 0, 0, 0, 0];
   let updatedWeekdays = [];
+  let profit = {};
+  for (let i = 1; i <= 12; i++) {
+    profit = { ...profit, [i]: 0 };
+  }
   let bestDishes = {};
-  const dayHours = {
-    18: 0,
-    19: 0,
-    20: 0,
-    21: 0,
-    22: 0,
-    23: 0,
-    24: 0,
-  };
+  let profitMonth = 0;
+  let dayHours = {};
+  for (let i = 11; i <= 24; i++) {
+    dayHours = { ...dayHours, [i]: 0 };
+  }
+
   completedOrders.map((order) => {
     //weekdays
     const weekday = new Date(order.time).getDay();
@@ -30,13 +31,27 @@ export const getAnalitics = (completedOrders) => {
         bestDishes = { ...bestDishes, [item.name]: 1 };
       }
     });
+    
+    //Profit
+    order.items.map((item) => {
+      const month = new Date(order.time).getMonth()
+       profitMonth +=  item.price
+      if (month in profit) {
+        profit[month + 1] = profitMonth;
+      } else {
+        profit = { ...profit, [month + 1]: profitMonth };
+      }
+    });
   });
+  
   updatedWeekdays.push(updatedWeekdays[0]);
   updatedWeekdays = updatedWeekdays.slice(1);
   analitics = {
     weekdays: updatedWeekdays,
     dayHours: dayHours,
     bestDishes: bestDishes,
+    profit: profit
   };
+  console.log(analitics);
   return analitics;
 };

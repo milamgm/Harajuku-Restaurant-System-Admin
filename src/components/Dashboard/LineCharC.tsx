@@ -25,7 +25,7 @@ const LineCharC = ({ labelsQ, dataQ, color }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 20,
+          stepSize: 9,
         },
       },
     },
@@ -41,7 +41,7 @@ const LineCharC = ({ labelsQ, dataQ, color }) => {
     },
   };
 
-  const labels = labelsQ//["18h", "19h", "20h", "21h", "22h", "23h", "24h"];
+  const labels = labelsQ
   const data = {
     labels,
     data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],

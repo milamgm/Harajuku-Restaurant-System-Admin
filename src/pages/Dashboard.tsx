@@ -12,12 +12,10 @@ const Dashboard = () => {
     bestDishes: {},
     weekdays: {},
     dayHours: {},
+    profit: {}
   });
-  const weekdaysAnalitics = getAnalitics(completedOrders);
-  console.log(analitics);
-
   useEffect(() => {
-    setAnalitics(weekdaysAnalitics);
+    setAnalitics(getAnalitics(completedOrders));
   }, [completedOrders]);
   return (
     <div className=" dashboard" style={{ paddingBottom: "200px" }}>
@@ -26,10 +24,10 @@ const Dashboard = () => {
           <Col xs="12" sm="8" lg="6" xl="6">
           <DashboardCard title="Profit">
               <div className="card-chart-div">
-                <LineCharC
-                  labelsQ={Object.keys(analitics.dayHours)}
-                  dataQ={Object.values(analitics.dayHours)}
-                  color="lightblue"
+                <BarChar
+                  labelsQ={Object.keys(analitics.profit)}
+                  dataQ={Object.values(analitics.profit)}
+                  color="gold"
                 />
               </div>
             </DashboardCard>

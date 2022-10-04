@@ -1,56 +1,60 @@
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-  } from 'chart.js';
-  import { Line } from 'react-chartjs-2';
-  ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-  );
-  
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-
-const LineCharC = () => {
-    const options = {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top' as const,
-          },
-          title: {
-            display: false,
-            text: '',
-          },
+const LineCharC = ({ labelsQ, dataQ, color }) => {
+  const options = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 20,
         },
-      };
-      
-      const labels = ['18h', '19h', '20h', '21h', '22h', '23h', '24h'];
-      const data = {
-        labels,
-        datasets: [
-          {
-            label: 'Dataset 1',
-            data: [36,6,75,7454,15,872,1],
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-        ],
-      };
-            
-    
-  return (
-    <Line options={options} data={data} />
-  )
-}
+      },
+    },
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: false,
+        text: "",
+      },
+    },
+  };
 
-export default LineCharC
+  const labels = labelsQ//["18h", "19h", "20h", "21h", "22h", "23h", "24h"];
+  const data = {
+    labels,
+    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: dataQ,
+        backgroundColor: color,
+      },
+    ],
+  };
+
+  return <Line options={options} data={data} />;
+};
+
+export default LineCharC;

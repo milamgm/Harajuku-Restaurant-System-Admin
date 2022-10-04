@@ -9,6 +9,29 @@ const DeletedOrders = () => {
   const ordersPerArrival = [...deletedOrders].sort((a, b) => {
     return Number(new Date(b.time)) - Number(new Date(a.time));
   });
+  const weekDays = [
+    "Sontag",
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag",
+  ];
+  const monate = [
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember",
+  ];
   useEffect(() => {
     onSnapshot(collection(db, "deletedOrders"), (snapshot) => {
       setDeletedOrders([]);
@@ -18,17 +41,20 @@ const DeletedOrders = () => {
     });
   }, []);
   return (
-    <div style={{paddingBottom : "200px"}}>
+    <div style={{ paddingBottom: "200px" }}>
       {ordersPerArrival &&
-        ordersPerArrival.map((deletedOrder: IOrder) => (
-          <Accordion flush className="border" key={deletedOrder.order_id}>
+        ordersPerArrival.map(({ order_id, table_num, time, items }: IOrder) => (
+          <Accordion flush className="border" key={order_id}>
             <Accordion.Item eventKey="0">
               <Accordion.Header>
-                Order #{deletedOrder.order_id}
-                <span className="ms-auto">Table {deletedOrder.table_num}</span>
+                Order #{order_id}
+                <span className="ms-auto">Table {table_num}</span>
                 <small className="ms-auto text-muted">
-                  Ordered at{" "}
-                  {new Date(deletedOrder.time).toLocaleString("de-DE", {
+                  {weekDays[new Date(time).getDay()]},&nbsp;
+                  {new Date(time).getDate()}.&nbsp;
+                  {monate[new Date(time).getMonth()]}&nbsp;
+                  {new Date(time).getFullYear()}&nbsp;um&nbsp;
+                  {new Date(time).toLocaleString("de-DE", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -47,11 +73,11 @@ const DeletedOrders = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {deletedOrder.items.map((item) => (
-                      <tr key={item.id}>
-                        <td className="text-muted">{item.id}</td>
-                        <td>{item.name}</td>
-                        <td>{item.quantity}</td>
+                    {items.map(({ id, name, quantity }) => (
+                      <tr key={id}>
+                        <td className="text-muted">{id}</td>
+                        <td>{name}</td>
+                        <td>{quantity}</td>
                       </tr>
                     ))}
                   </tbody>

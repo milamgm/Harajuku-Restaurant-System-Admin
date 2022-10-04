@@ -1,9 +1,9 @@
 import DoughnutChart from "./DoughnutChart";
 
-const DashboardCard = ({ children }) => {
+const DashboardCard = ({ children, title }) => {
   return (
     <div className="card-div">
-      <div className="card-header">Header</div>
+      <div className="card-header">{title}</div>
       <div className="card-body">
         <div className="card-body-content">
           {children}

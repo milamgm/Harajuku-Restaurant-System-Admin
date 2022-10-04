@@ -17,13 +17,13 @@ ChartJS.register(
   Legend
 );
 
-const BarChar = ({analitics}) => {
+const BarChar = ({ labelsQ, dataQ, color }) => {
   const options = {
     scales: {
       y: {
         beginAtZero: false,
         ticks: {
-          stepSize: 8,
+          stepSize: 10,
         },
       },
     },
@@ -38,22 +38,16 @@ const BarChar = ({analitics}) => {
       },
     },
   };
-
-  const labels = ["Mon", "Die", "Mie", "Don", "Fre", "Sam", "Son"];
+ 
+  const labels = labelsQ //["Mon", "Die", "Mie", "Don", "Fre", "Sam", "Son"];
   const data = {
     labels,
-    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     datasets: [
       {
         label: "Clients",
-        data: [9, 2, 9, 9, 3, 4, 9, 5, 9],
-        backgroundColor: "rgba(0, 133, 190, 0.591)",
-      },
-      {
-        label: "Profit",
-        data: [1, 6, 3, 9, 7, 4,5, 5, 6],
-        backgroundColor: "rgba(255, 19, 19, 0.591)",
-      },
+        data: dataQ,
+        backgroundColor: color,
+      }
     ],
   };
 

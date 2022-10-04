@@ -1,5 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { IAppContext, IProducts, ICategory } from "../types/types";
+import { collection, onSnapshot } from "firebase/firestore";
+import db from "../firebase/firebaseConfig";
 
 type Props = {
   children: React.ReactNode;
@@ -16,7 +18,9 @@ const AppContext = ({ children }: Props) => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [addCategoryField, setAddCategoryField] = useState(false);
-  const [analitics, setAnalitics] = useState([])
+  const [completedOrders, setCompletedOrders] = useState<IOrder[]>([]);
+
+  
 
   const AppContextValues = {
     setInitFetchProducts,
@@ -29,8 +33,17 @@ const AppContext = ({ children }: Props) => {
     setCategories,
     addCategoryField,
     setAddCategoryField,
-    analitics
+    completedOrders
   };
+  useEffect(() => {
+    onSnapshot(collection(db, "completedOrders"), (snapshot) => {
+      setCompletedOrders([]);
+      snapshot.docs.forEach((doc) => {
+        setCompletedOrders((prevOrders: any) => [...prevOrders, doc.data()]);
+      });
+    });
+  }, []);
+  
   return (
     <context.Provider value={AppContextValues}>{children}</context.Provider>
   );

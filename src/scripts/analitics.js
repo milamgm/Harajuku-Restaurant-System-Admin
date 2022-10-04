@@ -28,29 +28,25 @@ export const getAnalitics = (completedOrders) => {
       if (item.name in bestDishes) {
         bestDishes[item.name] = bestDishes[item.name] + item.quantity;
       } else {
-        bestDishes = { ...bestDishes, [item.name]: 1 };
+        bestDishes = { ...bestDishes, [item.name]: item.quantity };
       }
     });
-    
+
     //Profit
     order.items.map((item) => {
-      const month = new Date(order.time).getMonth()
-       profitMonth +=  item.price
-      if (month in profit) {
-        profit[month + 1] = profitMonth;
-      } else {
-        profit = { ...profit, [month + 1]: profitMonth };
-      }
+      const month = new Date(order.time).getMonth();
+      profitMonth += item.price;
+      profit[month + 1] = profitMonth;
     });
   });
-  
+
   updatedWeekdays.push(updatedWeekdays[0]);
   updatedWeekdays = updatedWeekdays.slice(1);
   analitics = {
     weekdays: updatedWeekdays,
     dayHours: dayHours,
     bestDishes: bestDishes,
-    profit: profit
+    profit: profit,
   };
   console.log(analitics);
   return analitics;

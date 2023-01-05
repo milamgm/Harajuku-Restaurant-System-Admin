@@ -1,14 +1,17 @@
+import React from "react";
+
 export interface IAppContext {
   initFetchProducts: boolean;
   setInitFetchProducts: Function;
   products: ProductsTypes[];
   setProducts: Function;
   initFetchCategories: boolean;
-  setInitFetchCategories: Function;
+  setInitFetchCategories: React.Dispatch<React.SetStateAction<boolean>>;
   categories: ICategory[];
-  setCategories: Function;
+  setCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
   addCategoryField: boolean;
-  setAddCategoryField: Function;
+  setAddCategoryField: React.Dispatch<React.SetStateAction<boolean>>;
+  completedOrders: IOrder[]
 }
 
 interface ICategory{
@@ -36,6 +39,14 @@ export interface IProduct {
   product_category: string;
   product_isAvailable: boolean;
 }
-export interface IProducts {
-  [index: number]: TProduct;
+export interface IFormTarget {
+  
+    id: { value: string };
+    name: { value: string };
+    img: { files: File[] };
+    price: { value: number };
+    description: { value: string };
+    category: { value: string };
+    isAvailable: { value: boolean };
+  
 }

@@ -1,28 +1,34 @@
 import { useState } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
 import { setDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getStorage } from "firebase/storage";
-import db from "../firebase/firebaseConfig";
-import { v4 } from "uuid";
-import AddCategoryField from "./CategoryField/AddCategoryField.js";
-import SelectCategoryField from "./CategoryField/SelectCategoryField.js";
-import { useAppContext } from "../context/AppContext.js";
-import toast, { Toaster } from "react-hot-toast";
-import { IProduct } from "../types/types";
-import { FiCamera } from "react-icons/Fi";
-import GalleryWidget from "./GalleryWidget";
+import { IFormTarget, IProduct } from "../types/types";
+import {
+  AddCategoryField,
+  Button,
+  db,
+  FiCamera,
+  Form,
+  FormControl,
+  GalleryWidget,
+  Modal,
+  SelectCategoryField,
+  toast,
+  Toaster,
+  useAppContext,
+  v4,
+} from "../utils";
 
-interface IProps {
+interface EditProductProps {
   editProductBtn: boolean;
   setEditProductBtn: (value: boolean) => void;
-  selectedProduct: IProduct | boolean[] | undefined;
+  editProduct: IProduct;
 }
 
 const EditProduct = ({
   editProductBtn,
   setEditProductBtn,
-  selectedProduct,
-}: IProps) => {
+  editProduct,
+}: EditProductProps) => {
   const { addCategoryField, setAddCategoryField } = useAppContext();
   const storage = getStorage();
   const {
@@ -32,9 +38,8 @@ const EditProduct = ({
     product_img,
     product_description,
     product_category,
-  } = selectedProduct;
+  } = editProduct;
 
-  //onChange Values
   const [productName, setProductName] = useState(product_name);
   const [price, setPrice] = useState(product_price);
   const [productDescription, setProductDescription] =
@@ -44,40 +49,51 @@ const EditProduct = ({
   const [openGalleryBtn, setOpenGalleryBtn] = useState(false);
   let path = "";
 
-  const handlePrice = (e) => {
+  //Formats input to decimals
+  const handlePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const result = e.target.value.replace(/\D/g, "");
     const decs = result.slice(-2);
     const units = result.slice(0, -2);
-    const num = units + (units !== "" ? "." : "") + decs;
+    const num = Number(units + (units !== "" ? "." : "") + decs);
     setPrice(num);
   };
-  const previewImg = (e) => {
+
+  //Creates a local image url to show preview
+  const previewImg = (e: React.ComponentProps<typeof FormControl>) => {
     const imgFile = e.target.files[0];
     const localURL = URL.createObjectURL(imgFile);
     setProductImg(localURL);
   };
-  const handleSubmit = (e) => {
+
+  //Updates the product in the database
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (e.target.img.files[0] !== undefined) {
-      const imgUpload = e.target.img.files[0];
+    const target = e.target as typeof e.target & IFormTarget;
+    if (target.img.files[0] !== undefined) {
+      //creates a path in case a new image has been uploaded
+      const imgUpload = target.img.files[0];
       const imgName = imgUpload.name + v4();
       const imgRef = ref(storage, `products/${imgName}`);
       uploadBytes(imgRef, imgUpload);
-      path = `https://firebasestorage.googleapis.com/v0/b/harajuku-b44c9.appspot.com/o/products%2F${imgName}?alt=media`;
+      path = `${
+        import.meta.env.VITE_APP_FIREBASE_IMG_PATH + imgName
+      }?alt=media`;
     }
+
+    //updates the database
+    const addToDB = async () => {
+      await setDoc(doc(db, "products", target.id.value), {
+        product_id: target.id.value,
+        product_img: path !== "" ? path : productImg,
+        product_name: productName,
+        product_price: Number(price),
+        product_description: productDescription,
+        product_category: productCategory,
+        product_isAvailable: true,
+      });
+    };
     try {
-      const addToDB = async () => {
-        await setDoc(doc(db, "products", e.target.id.value), {
-          product_id: e.target.id.value,
-          product_img: path !== "" ? path : productImg,
-          product_name: productName,
-          product_price: Number(price),
-          product_description: productDescription,
-          product_category: productCategory,
-          product_isAvailable: true,
-        });
-      };
       addToDB();
       setEditProductBtn(false);
     } catch (error) {
@@ -85,6 +101,7 @@ const EditProduct = ({
       toast.error("Failed to connect to database, please try again");
     }
   };
+
   return (
     <>
       <Modal
@@ -114,7 +131,7 @@ const EditProduct = ({
                 <Form.Label>Image</Form.Label>
                 <div>
                   <Button
-                  className="m-3"
+                    className="m-3 text-decoration-none"
                     variant="link"
                     onClick={() => setOpenGalleryBtn(true)}
                   >
@@ -124,6 +141,7 @@ const EditProduct = ({
                   </Button>
                   <Button
                     variant="link"
+                    className="text-decoration-none"
                     onClick={() => setOpenGalleryBtn(true)}
                   >
                     <div className="d-flex align-items-center">
@@ -172,6 +190,7 @@ const EditProduct = ({
                 <Form.Label>Category</Form.Label>{" "}
                 <Button
                   variant="link"
+                  className="text-decoration-none"
                   onClick={() => setAddCategoryField(!addCategoryField)}
                 >
                   + Add new category

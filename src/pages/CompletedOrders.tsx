@@ -1,36 +1,12 @@
-import { Accordion, Col, Row, Table } from "react-bootstrap";
 import { useAppContext } from "../context/AppContext";
-import { IOrder } from "../types/types";
+import { IAppContext, IOrder } from "../types/types";
+import { Accordion, Col, monate, Row, Table, weekDays } from "../utils";
 
 const CompletedOrders = () => {
-  const { completedOrders } = useAppContext();
-  // const [completedOrders, setCompletedOrders] = useState<IOrder[]>([]);
+  const { completedOrders }: IAppContext = useAppContext();
   const ordersPerArrival = [...completedOrders].sort((a, b) => {
     return Number(new Date(b.time)) - Number(new Date(a.time));
   });
-  const weekDays = [
-    "Sontag",
-    "Montag",
-    "Dienstag",
-    "Mittwoch",
-    "Donnerstag",
-    "Freitag",
-    "Samstag",
-  ];
-  const monate = [
-    "Januar",
-    "Februar",
-    "März",
-    "April",
-    "Mai",
-    "Juni",
-    "Juli",
-    "August",
-    "September",
-    "Oktober",
-    "November",
-    "Dezember",
-  ];
   return (
     <div style={{ paddingBottom: "200px" }}>
       {ordersPerArrival &&

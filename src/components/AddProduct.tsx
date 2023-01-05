@@ -1,14 +1,21 @@
 import React, { useState } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
 import { setDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getStorage } from "firebase/storage";
 import db from "../firebase/firebaseConfig";
-import { v4 } from "uuid";
-import { useAppContext } from "../context/AppContext.js";
-import AddCategoryField from "./CategoryField/AddCategoryField.js";
-import SelectCategoryField from "./CategoryField/SelectCategoryField.js";
-import GalleryWidget from "./GalleryWidget";
-import { FiCamera } from "react-icons/Fi";
+import { IFormTarget } from "../types/types";
+import {
+  useAppContext,
+  FormControl,
+  v4,
+  Modal,
+  Form,
+  Button,
+  FiCamera,
+  AddCategoryField,
+  SelectCategoryField,
+  GalleryWidget,
+  toast,
+} from "../utils";
 
 interface PropsInterface {
   addProductBtn: boolean;
@@ -23,7 +30,8 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
   const [openGalleryBtn, setOpenGalleryBtn] = useState(false);
   let path = "";
 
-  const handlePrice = (e) => {
+  //Formats input to decimals
+  const handlePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const result = e.target.value.replace(/\D/g, "");
     const decs = result.slice(-2);
@@ -31,29 +39,29 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
     const num = units + (units !== "" ? "." : "") + decs;
     setPrice(num);
   };
-  const previewImg = (e) => {
-    const imgFile = e.target.files[0];
-    const localURL = URL.createObjectURL(imgFile);
+
+  //Creates a local image url to show preview
+  const previewImg = (e: React.ComponentProps<typeof FormControl>) => {
+    const imgFile = e.target.files && e.target.files[0];
+    const localURL = imgFile ? URL.createObjectURL(imgFile) : "";
     setProductImg(localURL);
   };
-  const handleSubmit = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    const target = e.target as typeof e.target & {
-      id: { value: string };
-      name: { value: string };
-      price: { value: number };
-      description: { value: string };
-      category: { value: string };
-      isAvailable: { value: boolean };
-    };
 
-    if (e.target.img.files[0] !== undefined) {
-      const imgUpload = e.target.img.files[0];
+  //Updates the product in the database
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & IFormTarget;
+    //creates a path in case a new image has been uploaded
+    if (target.img.files[0] !== undefined) {
+      const imgUpload = target.img.files[0];
       const imgName = imgUpload.name + v4();
       const imgRef = ref(storage, `products/${imgName}`);
       uploadBytes(imgRef, imgUpload);
-      path = `https://firebasestorage.googleapis.com/v0/b/harajuku-b44c9.appspot.com/o/products%2F${imgName}?alt=media`;
+      path = `${
+        import.meta.env.VITE_APP_FIREBASE_IMG_PATH + imgName
+      }?alt=media`;
     }
+    //updates the database
     const addToDB = async () => {
       await setDoc(doc(db, "products", target.id.value), {
         product_id: target.id.value,
@@ -65,8 +73,13 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
         product_isAvailable: true,
       });
     };
-    addToDB();
-    setAddProductBtn(false);
+    try {
+      addToDB();
+      setAddProductBtn(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to connect to database, please try again");
+    }
   };
   return (
     <>
@@ -96,16 +109,24 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
               >
                 <Form.Label>Image</Form.Label>
                 <div>
-                  { productImg !== "" && <Button
-                    variant="link"
-                    onClick={() => setOpenGalleryBtn(true)}
-                  >
-                    <div className="img-form-div">
-                      <img className="img-form" src={productImg} width="125" />
-                    </div>
-                  </Button>}
+                  {productImg !== "" && (
+                    <Button
+                      variant="link"
+                      className="text-decoration-none"
+                      onClick={() => setOpenGalleryBtn(true)}
+                    >
+                      <div className="img-form-div">
+                        <img
+                          className="img-form"
+                          src={productImg}
+                          width="125"
+                        />
+                      </div>
+                    </Button>
+                  )}
                   <Button
                     variant="link"
+                    className="text-decoration-none"
                     onClick={() => setOpenGalleryBtn(true)}
                   >
                     <div className="d-flex align-items-center">
@@ -156,6 +177,7 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
                 <Form.Label>Category</Form.Label>{" "}
                 <Button
                   variant="link"
+                  className="text-decoration-none"
                   onClick={() => setAddCategoryField(!addCategoryField)}
                 >
                   + Add new category

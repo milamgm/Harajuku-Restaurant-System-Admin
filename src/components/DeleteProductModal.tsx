@@ -5,30 +5,27 @@ import toast, { Toaster } from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
 import { deleteDoc, doc } from "firebase/firestore";
 import db from "../firebase/firebaseConfig";
-import { IProduct } from "../types/types";
 
-interface IProps {
+interface IDeleteProductModalProps {
   deleteProductBtn: boolean;
-  setDeleteProductBtn: (value: boolean) => void;
-  selectedProduct: IProduct | boolean[] | undefined;
+  setDeleteProductBtn: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedProducts: string[];
 }
 
 const DeleteProductModal = ({
   deleteProductBtn,
   setDeleteProductBtn,
-  selectedProduct,
-}: IProps) => {
-  const { products, setProducts } = useAppContext();
+  selectedProducts
+}: IDeleteProductModalProps) => {
+  const {products} = useAppContext()
   const [input, setInput] = useState("");
-  const [multipleProductsConfirm, setMultipleProductsConfirm] = useState(
-    "Yes, I want to delete the selected items."
-  );
-
+  const multipleProductsConfirm = "Yes, I want to delete the selected items."
+ 
   const handleDeleteProduct = () => {
-    const deleteFromDatabase = (product: IProduct) => {
+    const deleteFromDatabase = (selectedProductId : string) => {
       try {
         const deleteFromDB = async () => {
-          await deleteDoc(doc(db, "products", product.product_id));
+          await deleteDoc(doc(db, "products", selectedProductId));
           toast.success("Product(s) successfully deleted!");
           setDeleteProductBtn(false);
         };
@@ -38,23 +35,12 @@ const DeleteProductModal = ({
         toast.error("Failed to connect to database, please try again");
       }
     };
-
-    if (!Array.isArray(selectedProduct)) {
-      if (selectedProduct.product_name === input) {
-        deleteFromDatabase(selectedProduct);
-      } else {
-        toast.error("Name doesn't match. Please try again");
-      }
+    if (multipleProductsConfirm === input) {
+      selectedProducts.map((selectedProductId) => {
+        deleteFromDatabase(selectedProductId);
+      });
     } else {
-      if (multipleProductsConfirm === input) {
-        selectedProduct.map((checkbox, ind) => {
-          if (checkbox === true) {
-            deleteFromDatabase(products[ind]);
-          }
-        });
-      } else {
-        toast.error("Name doesn't match. Please try again");
-      }
+      toast.error("Name doesn't match. Please try again");
     }
   };
 
@@ -68,58 +54,35 @@ const DeleteProductModal = ({
         <Modal.Header closeButton>
           <Modal.Title>Delete Product</Modal.Title>
         </Modal.Header>
-        {!Array.isArray(selectedProduct) && (
-          <Modal.Body className="modal-body">
-            <div className="modal-in">
-              <Alert variant="danger">
-                <GrAlert /> This action will permanently delete this product and
-                all information associated with it.
-              </Alert>
-              To confirm that you want to delete this product, type its name:{" "}
-              <b>{selectedProduct.product_name}</b>
-              <Form.Control
-                autoFocus
-                className="mt-3"
-                type="text"
-                placeholder={selectedProduct.product_name}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-              />
-            </div>
-          </Modal.Body>
-        )}
-        {Array.isArray(selectedProduct) && (
-          <Modal.Body className="modal-body">
-            <div className="modal-in">
-              <Alert variant="danger">
-                <GrAlert /> This action will permanently delete this product(s)
-                and all information associated.
-              </Alert>
-              To confirm that you want to delete the following products:
-              <ul>
-                {selectedProduct.map(
-                  (checkbox, ind) =>
-                    checkbox === true && (
-                      <li key={ind}>
-                        <small>
-                          <b>{products[ind].product_name} </b>
-                        </small>
-                      </li>
-                    )
-                )}
-              </ul>
-              please type "{multipleProductsConfirm}"
-              <Form.Control
-                autoFocus
-                className="mt-3"
-                type="text"
-                placeholder={multipleProductsConfirm}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-              />
-            </div>
-          </Modal.Body>
-        )}
+
+        <Modal.Body className="modal-body">
+          <div className="modal-in">
+            <Alert variant="danger">
+              <GrAlert /> This action will permanently delete this product(s)
+              and all information associated.
+            </Alert>
+            To confirm that you want to delete the following products:
+            <ul>
+              {selectedProducts.map((selectedProductId) => (
+                <li key={selectedProductId}>
+                  <small>
+                    <b>{products.find(prod => prod.product_id === selectedProductId)?.product_name} </b>
+                  </small>
+                </li>
+              ))}
+            </ul>
+            please type "{multipleProductsConfirm}"
+            <Form.Control
+              autoFocus
+              className="mt-3"
+              type="text"
+              placeholder={multipleProductsConfirm}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+          </div>
+        </Modal.Body>
+
         <Modal.Footer>
           <Button
             className="btn-secondary"

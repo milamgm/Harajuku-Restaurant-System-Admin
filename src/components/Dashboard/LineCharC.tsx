@@ -19,7 +19,12 @@ ChartJS.register(
   Legend
 );
 
-const LineCharC = ({ labelsQ, dataQ, color }) => {
+interface ILineCharC {
+  labelsQ: string[];
+  dataQ: string[];
+  color: string;
+}
+const LineCharC = ({ labelsQ, dataQ, color }: ILineCharC) => {
   const options = {
     scales: {
       y: {
@@ -41,7 +46,7 @@ const LineCharC = ({ labelsQ, dataQ, color }) => {
     },
   };
 
-  const labels = labelsQ
+  const labels = labelsQ;
   const data = {
     labels,
     data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],

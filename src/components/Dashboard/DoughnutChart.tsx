@@ -1,8 +1,13 @@
 import { Doughnut } from "react-chartjs-2";
-import {Chart, ArcElement} from 'chart.js'
+import { Chart, ArcElement } from "chart.js";
 Chart.register(ArcElement);
 
-const DoughnutChart = ({labelsQ, dataQ}) => {
+interface IDoughnutChart {
+  labelsQ: string[];
+  dataQ: string[];
+}
+
+const DoughnutChart = ({ labelsQ, dataQ }: IDoughnutChart) => {
   const data = {
     labels: labelsQ,
     datasets: [
@@ -13,7 +18,7 @@ const DoughnutChart = ({labelsQ, dataQ}) => {
   };
   return (
     <div>
-      <Doughnut data={data}/>
+      <Doughnut data={data} />
     </div>
   );
 };

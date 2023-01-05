@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import React from "react";
+import { useState, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import AppContext from "./context/AppContext";
 import Navbar from "./components/Navbar";
@@ -7,9 +7,9 @@ import Dashboard from "./pages/Dashboard";
 import "../src/loading.css";
 import "./styles/styles.css";
 
-import Products from "./pages/Products";
-import CompletedOrders from "./pages/CompletedOrders";
-import DeletedOrders from "./pages/DeletedOrders";
+const Products = React.lazy(() => import("./pages/Products"));
+const CompletedOrders = React.lazy(() => import("./pages/CompletedOrders"));
+const DeletedOrders = React.lazy(() => import("./pages/DeletedOrders"));
 import Sidebar from "./components/Sidebar";
 
 function App() {
@@ -23,9 +23,31 @@ function App() {
           <div className="display-content">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/completedorders" element={<CompletedOrders />} />
-              <Route path="/deletedorders" element={<DeletedOrders />} />
+
+              <Route
+                path="/products"
+                element={
+                  <Suspense fallback={<>Loading...</>}>
+                    <Products />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/completedorders"
+                element={
+                  <Suspense fallback={<>Loading...</>}>
+                    <CompletedOrders />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/deletedorders"
+                element={
+                  <Suspense fallback={<>Loading...</>}>
+                    <DeletedOrders />
+                  </Suspense>
+                }
+              />
             </Routes>
           </div>
         </div>

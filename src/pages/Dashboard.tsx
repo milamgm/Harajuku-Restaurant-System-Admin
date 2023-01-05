@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col,  Row } from "react-bootstrap";
 import BarChar from "../components/Dashboard/BarChar";
 import DashboardCard from "../components/Dashboard/DashboardCard";
-import DoughnutChart from "../components/Dashboard/DoughnutChart";
 import LineCharC from "../components/Dashboard/LineCharC";
 import { useAppContext } from "../context/AppContext";
-import { getAnalitics } from "../scripts/analitics";
+import { getAnalytics } from "../scripts/analitics";
 const Dashboard = () => {
   const { completedOrders } = useAppContext();
   const [analitics, setAnalitics] = useState({
@@ -15,7 +14,7 @@ const Dashboard = () => {
     profit: {}
   });
   useEffect(() => {
-    setAnalitics(getAnalitics(completedOrders));
+    setAnalitics(getAnalytics(completedOrders));
   }, [completedOrders]);
   return (
     <div className=" dashboard" style={{ paddingBottom: "200px" }}>

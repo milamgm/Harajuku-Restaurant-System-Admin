@@ -7,9 +7,7 @@ const SearchField = () => {
   const { products, setProducts } = useAppContext();
   const [searchInput, setSearchInput] = useState("");
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-  };
+
   return (
     <Col lg="4" className="mt-2">
       <Form>

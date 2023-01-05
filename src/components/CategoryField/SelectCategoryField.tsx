@@ -3,14 +3,17 @@ import { Form } from "react-bootstrap";
 import { useAppContext } from "../../context/AppContext";
 import { onSnapshot, collection } from "firebase/firestore";
 import db from "../../firebase/firebaseConfig";
+import { ICategory } from "../../types/types";
 
-
-interface TProps {
-  setProductCategory : (prev: any) => string
-  currentCategory : string
+interface SelectCategoryFieldProps {
+  setProductCategory?: React.Dispatch<React.SetStateAction<string>>;
+  currentCategory?: string;
 }
 
-const SelectCategoryField = ({ setProductCategory, currentCategory } : TProps) => {
+const SelectCategoryField = ({
+  setProductCategory,
+  currentCategory,
+}: SelectCategoryFieldProps) => {
   const {
     initFetchCategories,
     setInitFetchCategories,
@@ -22,7 +25,10 @@ const SelectCategoryField = ({ setProductCategory, currentCategory } : TProps) =
       onSnapshot(collection(db, "categories"), (snapshot) => {
         setCategories([]);
         snapshot.docs.forEach((doc) => {
-          setCategories((prevCategories : boolean[]) => [...prevCategories, doc.data()]);
+          setCategories((prevCategories) => [
+            ...prevCategories,
+            doc.data() as ICategory,
+          ]);
         });
       });
       setInitFetchCategories(true);
@@ -33,7 +39,9 @@ const SelectCategoryField = ({ setProductCategory, currentCategory } : TProps) =
       aria-label="Categories"
       name="category"
       defaultValue={currentCategory}
-      onChange={(e) => setProductCategory(e.target.value)}
+      onChange={(e) =>
+        setProductCategory !== undefined && setProductCategory(e.target.value)
+      }
     >
       {categories.map((category) => (
         <option key={category.category_name} value={category.category_name}>

@@ -8,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { IAnalytics } from "../../scripts/analitics";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -16,8 +17,22 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-const BarChar = ({ labelsQ, dataQ, color }) => {
+interface BarCharProps {
+  labelsQ: string[];
+  dataQ: IAnalytics["profit"];
+  color: string;
+}
+interface IData {
+  labels: BarCharProps["labelsQ"];
+  datasets: [
+    {
+      label: string;
+      data: BarCharProps["dataQ"];
+      backgroundColor: string;
+    }
+  ];
+}
+const BarChar = ({ labelsQ, dataQ, color }: BarCharProps) => {
   const options = {
     scales: {
       y: {
@@ -38,16 +53,16 @@ const BarChar = ({ labelsQ, dataQ, color }) => {
       },
     },
   };
- 
-  const labels = labelsQ //["Mon", "Die", "Mie", "Don", "Fre", "Sam", "Son"];
-  const data = {
+
+  const labels = labelsQ; //["Mon", "Die", "Mie", "Don", "Fre", "Sam", "Son"];
+  const data: IData = {
     labels,
     datasets: [
       {
         label: "Clients",
         data: dataQ,
         backgroundColor: color,
-      }
+      },
     ],
   };
 

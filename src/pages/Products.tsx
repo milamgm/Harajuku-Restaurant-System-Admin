@@ -1,28 +1,22 @@
-import { BiPlus, BiImport, BiExport, BiHide, BiImage } from "react-icons/Bi";
-import { MdEdit, MdDelete } from "react-icons/Md";
-import { GoAlert } from "react-icons/Go";
-import {
-  Button,
-  Row,
-  Col,
-  Form,
-  Table,
-  Modal,
-  Alert,
-  Container,
-} from "react-bootstrap";
-import { useEffect, useRef, useState } from "react";
-import AddProduct from "../components/AddProduct";
-import { onSnapshot, collection, setDoc, doc } from "firebase/firestore";
-import db from "../firebase/firebaseConfig";
-import EditProduct from "../components/EditProduct";
-import { useAppContext } from "../context/AppContext";
-import DeleteProductModal from "../components/DeleteProductModal";
-import SearchField from "../components/SearchField";
-import toast, { Toaster } from "react-hot-toast";
-import Loading from "../components/Loading";
+import React, { useEffect, useRef, useState } from "react";
 import { IProduct } from "../types/types";
-import ImportProducts from "../components/ImportProducts";
+import { onSnapshot, collection, setDoc, doc } from "firebase/firestore";
+import {
+  BiPlus,
+  Button,
+  AddProduct,
+  db,
+  EditProduct,
+  useAppContext,
+  DeleteProductModal,
+  Toaster,
+  Loading,
+  ImportProducts,
+  ShowProductImageModal,
+  ProductsTable,
+  ProductsTopBar,
+  productInitialState,
+} from "../utils";
 
 const Products = () => {
   const { setInitFetchProducts, initFetchProducts, products, setProducts } =
@@ -33,279 +27,89 @@ const Products = () => {
   const [importProductsBtn, setImportProductsBtn] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const mainCheckbox = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const [checkboxes, setCheckboxes] = useState<boolean[]>(
-    new Array(products.length).fill(false)
-  );
-  const [selectedProduct, setSelectedProduct] = useState<
-    IProduct | boolean[]
-  >();
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [editProduct, setEditProduct] = useState<IProduct>(productInitialState);
 
-  const [productName, setProductName] = useState<string>();
-  const [productImg, setProductImg] = useState<string>();
-
-  const markAsUnavailable = (input: IProduct | boolean[]): void => {
-    const addToDB = async (input: IProduct) => {
-      await setDoc(doc(db, "products", input.product_id), {
-        product_id: input.product_id,
-        product_img: input.product_img,
-        product_name: input.product_name,
-        product_price: input.product_price,
-        product_description: input.product_description,
-        product_category: input.product_category,
-        product_isAvailable: input.product_isAvailable === true ? false : true,
-      });
-    };
-    if (Array.isArray(input)) {
-      input.map((checkbox, ind) => {
-        if (checkbox === true) {
-          try {
-            addToDB(products[ind]);
-          } catch (error) {
-            console.error(error);
-            toast.error("Failed to connect to database, please try again");
-          }
-        }
-      });
-    } else {
-      try {
-        addToDB(input);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to connect to database, please try again");
-      }
+  //Groups all checkbox references (except mainCheckbox) into an array
+  const revealRefs = useRef([]);
+  revealRefs.current = [];
+  const checkBoxRefs: HTMLInputElement[] = revealRefs.current;
+  const addToRefs = (el: HTMLInputElement) => {
+    if (el && !checkBoxRefs.includes(el)) {
+      checkBoxRefs.push(el);
     }
   };
-  const handleCheckbox = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (index === 9999) {
-      let target = e.target as HTMLInputElement;
-      let mainCheckboxValue = target.checked;
-      setCheckboxes(
-        checkboxes.map((value, ind) => {
-          return (value = mainCheckboxValue);
-        })
+  //If maincheckbox, enable/disable all other checkboxes; if not, gets the selected checkboxes.
+  const getCheckboxes = (e: React.ChangeEvent<HTMLInputElement> | null) => {
+    if (e?.target.dataset.check === "mainCheckbox") {
+      revealRefs.current.map(
+        (item: HTMLInputElement) => (item.checked = e.target.checked)
       );
-    } else {
-      setCheckboxes(
-        checkboxes.map((value, ind) => {
-          if (ind === index) {
-            return (value = !value);
-          } else {
-            return value;
-          }
-        })
-      );
-      mainCheckbox.current.checked = false;
     }
+    setSelectedProducts(() => {
+      return checkBoxRefs
+        .filter((checkbox: HTMLInputElement) => checkbox.checked === true)
+        ?.map((item: HTMLInputElement) => item.dataset.check!);
+    });
   };
+  //Change the status of a product to available/not available. (If it is not available, it will not be displayed in customers app).
+  const changeAvailability = (selectedProductsId: string[]) => {
+    const updateInDatabase = async (product: IProduct) =>
+      await setDoc(doc(db, "products", product.product_id), product);
+    selectedProductsId.forEach((productId) => {
+      const product = products.find(
+        (product) => product.product_id === productId
+      );
+      product.product_isAvailable =
+        product.product_isAvailable === true ? false : true;
+      updateInDatabase(product);
+    });
+  };
+  //collects again the active checkboxes when deleteProduct modal closes.
   useEffect(() => {
-    if (initFetchProducts === false) {
-      let productQty = 0;
-      const accessProducts = new Promise((resolutionFunc, rejectionFunc) => {
-        onSnapshot(collection(db, "products"), (snapshot) => {
-          setProducts([]);
-          snapshot.docs.forEach((doc) => {
-            setProducts((prevProducts: IProduct[]) => [
-              ...prevProducts,
-              doc.data(),
-            ]);
-            productQty++;
-          });
-          setInitFetchProducts(true);
-          resolutionFunc(() => console.log("resolved"));
-          rejectionFunc(() => console.log("rejected"));
+    if (!deleteProductBtn) {
+      getCheckboxes(null);
+    }
+  }, [deleteProductBtn]);
+  //Fetches products data.
+  useEffect(() => {
+    if (!initFetchProducts) {
+      onSnapshot(collection(db, "products"), (snapshot) => {
+        setProducts([]);
+        snapshot.docs.forEach((doc) => {
+          setProducts((prevProducts: IProduct[]) => [
+            ...prevProducts,
+            doc.data(),
+          ]);
         });
+        setInitFetchProducts(true);
       });
-
-      accessProducts
-        .then(() => {
-          setCheckboxes(new Array(productQty).fill(false));
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error("Failed to connect to database, please try again");
-        });
     }
   }, []);
-
-  useEffect(() => {
-    /*if (checkboxes.every((checkbox) => checkbox === true)) {
-      mainCheckbox.current.checked = true;
-      console.log("hola");
-    }else{
-      mainCheckbox.current.checked = false;
-    }*/
-  }, [checkboxes]);
+  //props for ProductsTable component
+  const productsTablePros = {
+    getCheckboxes,
+    mainCheckbox,
+    setEditProduct,
+    setShowImage,
+    setEditProductBtn,
+    changeAvailability,
+    addToRefs,
+    setDeleteProductBtn,
+    setSelectedProducts,
+  };
   return (
     <div style={{ paddingBottom: "200px" }}>
-      <Row>
-        <Col>
-          <Button
-            className="mt-1me-1"
-            variant="success"
-            onClick={() => setAddProductBtn(true)}
-          >
-            <BiPlus /> Add Product
-          </Button>{" "}
-          <Button
-            className="mt-1me-1"
-            variant="dark"
-            onClick={() => setImportProductsBtn(true)}
-          >
-            <BiImport /> Import Products
-          </Button>{" "}
-          <Button className="mt-1" variant="dark">
-            <BiExport /> Export Products
-          </Button>{" "}
-        </Col>
-        <SearchField />
-      </Row>
+      <ProductsTopBar
+        setAddProductBtn={setAddProductBtn}
+        setImportProductsBtn={setImportProductsBtn}
+        selectedProducts={selectedProducts}
+        changeAvailability={changeAvailability}
+        setDeleteProductBtn={setDeleteProductBtn}
+      />
+      {products.length > 0 && <ProductsTable {...productsTablePros} />}
 
-      <div className="mt-5">
-        <div className="d-flex justify-content-end mb-2">
-          <Button
-            className="me-1 btn-warning"
-            onClick={() => {
-              if (checkboxes.includes(true)) markAsUnavailable(checkboxes);
-            }}
-          >
-            <BiHide /> Mark / unmark as unavailable
-          </Button>{" "}
-          <Button
-            className="btn-danger"
-            onClick={() => {
-              setSelectedProduct(checkboxes);
-              if (checkboxes.includes(true)) setDeleteProductBtn(true);
-            }}
-          >
-            <MdDelete /> Delete
-          </Button>{" "}
-        </div>
-        {products.length > 0 && (
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>
-                  <Form.Check
-                    type="checkbox"
-                    onChange={(e) => handleCheckbox(e, 9999)}
-                    ref={mainCheckbox}
-                  />
-                </th>
-                <th># ID</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Image</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product: IProduct, index: number) => (
-                <tr
-                  key={product.product_id}
-                  className={`${
-                    product.product_isAvailable === true ? "" : "isNotAvailable"
-                  }`}
-                >
-                  <td>
-                    <Form.Check
-                      data-check={product.product_id}
-                      type="checkbox"
-                      className="row_checkbox"
-                      checked={checkboxes[index]}
-                      onChange={(e) => handleCheckbox(e, index)}
-                    />
-                  </td>
-                  <td>{product.product_id}</td>
-                  <td>{product.product_name}</td>
-                  <td>{product.product_category}</td>
-                  <td>
-                    <small>
-                      <i></i>
-                      {product.product_description}
-                    </small>
-                  </td>
-                  <td className="text-end">
-                    {typeof product.product_price === "number" ? (
-                      `${product.product_price}€`
-                    ) : (
-                      <h6>Price must be a number, please update it</h6>
-                    )}
-                  </td>
-                  <td>
-                    <div
-                      className="text-center"
-                      onClick={() => {
-                        {
-                          if (product.product_img !== "") {
-                            setShowImage(true);
-                          } else {
-                            setSelectedProduct(product);
-                            setEditProductBtn(true);
-                          }
-                          setProductName(product.product_name);
-                          setProductImg(product.product_img);
-                        }
-                      }}
-                    >
-                      {product.product_img !== "" ? (
-                        <h3>
-                          <BiImage />
-                        </h3>
-                      ) : (
-                        <Alert variant="danger" className="text-center">
-                          <GoAlert />
-                          "Please add an image"
-                        </Alert>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="btn-list-div">
-                      <Button
-                        className="text-warning"
-                        variant="link"
-                        onClick={() => markAsUnavailable(product)}
-                      >
-                        <h4>
-                          <BiHide />
-                        </h4>
-                      </Button>
-                      <Button
-                        className="text-info"
-                        variant="link"
-                        onClick={() => {
-                          setEditProductBtn(true);
-                          setSelectedProduct(product);
-                        }}
-                      >
-                        <h4>
-                          <MdEdit />
-                        </h4>
-                      </Button>
-                      <Button
-                        className="text-danger"
-                        variant="link"
-                        onClick={() => {
-                          setDeleteProductBtn(true);
-                          setSelectedProduct(product);
-                        }}
-                      >
-                        <h4>
-                          <MdDelete />
-                        </h4>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </div>
+      {/*////////////// OPEN MODALS ////////////*/}
       {addProductBtn && (
         <AddProduct
           addProductBtn={addProductBtn}
@@ -316,14 +120,14 @@ const Products = () => {
         <EditProduct
           editProductBtn={editProductBtn}
           setEditProductBtn={setEditProductBtn}
-          selectedProduct={selectedProduct}
+          editProduct={editProduct}
         />
       )}
       {deleteProductBtn && (
         <DeleteProductModal
           deleteProductBtn={deleteProductBtn}
           setDeleteProductBtn={setDeleteProductBtn}
-          selectedProduct={selectedProduct}
+          selectedProducts={selectedProducts}
         />
       )}
       {importProductsBtn && (
@@ -342,19 +146,23 @@ const Products = () => {
           </Button>
         </div>
       )}
-      <Toaster position="top-center" reverseOrder={false} />
-      <div>
-        <Modal show={showImage} onHide={() => setShowImage(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>{productName}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="modal-body">
-            <div className="modal-in">
-              <img src={productImg} className="show-product-img" />
-            </div>
-          </Modal.Body>
-        </Modal>
-      </div>
+
+      {showImage && (
+        <ShowProductImageModal
+          showImage={showImage}
+          setShowImage={setShowImage}
+          editProduct={editProduct}
+        />
+      )}
+
+      <Toaster
+        toastOptions={{
+          style: {
+            marginTop: "60px",
+            backgroundColor: "#c6f2ff",
+          },
+        }}
+      />
     </div>
   );
 };

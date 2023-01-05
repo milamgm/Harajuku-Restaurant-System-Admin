@@ -1,19 +1,34 @@
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, FormControl, Modal } from "react-bootstrap";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { setDoc, doc, addDoc, collection } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import db from "../firebase/firebaseConfig";
 
-const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
-  const [file, setFile] = useState();
-  const handleSubmit = (e) => {
+interface ImportProductsProps {
+  importProductsBtn: boolean;
+  setImportProductsBtn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ImportProducts = ({
+  importProductsBtn,
+  setImportProductsBtn,
+}: ImportProductsProps) => {
+  const [file, setFile] = useState<File>();
+
+  const handleChange = (e: React.ComponentProps<typeof FormControl>) => {
+    const target = e.target as HTMLInputElement;
+    setFile(target.files![0]);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    //Checks if the file extension is csv
     if (file) {
       const fileExt = file.name.slice(-3);
-      if (fileExt === "csv" || fileExt === "txt") {
-        const fileReader = new FileReader();
+      if (fileExt === "csv") {
+        const fileReader: FileReader = new FileReader();
         fileReader.readAsText(file);
-
+        console.log(fileReader);
         fileReader.onload = () => {
           importFile(fileReader.result, fileExt);
         };
@@ -22,14 +37,13 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
           toast.error("Error, please try again.");
         };
       } else {
-        toast.error(
-          "Fille not allowed. Must be a CSV or tab-delimited TXT file."
-        );
+        toast.error("Fille not allowed. Must be a CSV file.");
       }
     } else {
       toast.error("No files selected");
     }
   };
+  //Changes the first letter of the words in the string to uppercase
   const toUpperCaseString = (str: string) => {
     let upperStr;
     if (str.indexOf(" ")) {
@@ -47,7 +61,8 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
     }
     return upperStr;
   };
-  const addToDB = async (product) => {
+  //Saves the data of the uploaded file in the database
+  const addToDB = async (product: string[]) => {
     const upperCasedName = toUpperCaseString(product[1]);
     const upperCasedCategory = toUpperCaseString(product[4]);
     await setDoc(doc(db, "products", product[0]), {
@@ -65,23 +80,22 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
     toast.success("Product(s) successfully imported");
     setImportProductsBtn(false);
   };
-  const importFile = (fileText, fileExt) => {
-    if (fileExt === "csv") {
-      let fileArray = fileText.split(/\r?\n|\r/);
-      fileArray = fileArray.filter((value) => value !== "");
-      for (let i = 1; i < fileArray.length; i++) {
-        const product = fileArray[i].split(";");
-        console.log(product);
-        try {
-          addToDB(product);
-        } catch (error) {
-          console.error(error);
-          toast.error("Could not connect, please try again");
-        }
+//Collects the information from the csv file in an array to add it to the database
+  const importFile = (
+    fileText: string | ArrayBuffer | null,
+    fileExt: string
+  ) => {
+    let fileArray =
+      typeof fileText === "string" ? fileText.split(/\r?\n|\r/) : [""];
+    fileArray = fileArray.filter((value) => value !== "");
+    for (let i = 1; i < fileArray.length; i++) {
+      const product = fileArray[i].split(";");
+      try {
+        addToDB(product);
+      } catch (error) {
+        console.error(error);
+        toast.error("Could not connect, please try again");
       }
-    }
-    if (fileExt === "txt") {
-      console.log("lallalal");
     }
   };
   return (
@@ -107,7 +121,7 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
                   name="importFile"
                   type="file"
                   multiple={false}
-                  onChange={(e) => setFile(e.target.files[0])}
+                  onChange={(e) => handleChange(e)}
                 />
               </Form.Group>
               <Button className="btn-primary" type="submit">
@@ -116,9 +130,8 @@ const ImportProducts = ({ importProductsBtn, setImportProductsBtn }) => {
             </Form>
           </div>
         </Modal.Body>
-        <Toaster position="top-center" reverseOrder={false}/>
+        <Toaster position="top-center" reverseOrder={false} />
       </Modal>
-      
     </>
   );
 };

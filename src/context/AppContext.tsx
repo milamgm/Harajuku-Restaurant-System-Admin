@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { IAppContext, IProducts, ICategory } from "../types/types";
+import { IAppContext, ICategory, IOrder, IProduct } from "../types/types";
 import { collection, onSnapshot } from "firebase/firestore";
 import db from "../firebase/firebaseConfig";
 
-type Props = {
+type AppContextProps = {
   children: React.ReactNode;
 };
 
@@ -12,11 +12,11 @@ export const useAppContext = () => {
   return useContext(context);
 };
 
-const AppContext = ({ children }: Props) => {
+const AppContext = ({ children }: AppContextProps) => {
   const [initFetchProducts, setInitFetchProducts] = useState(false);
   const [initFetchCategories, setInitFetchCategories] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [addCategoryField, setAddCategoryField] = useState(false);
   const [completedOrders, setCompletedOrders] = useState<IOrder[]>([]);
 

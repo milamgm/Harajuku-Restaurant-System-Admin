@@ -1,6 +1,9 @@
-import DoughnutChart from "./DoughnutChart";
+interface IDashboardCard{
+  children: JSX.Element,
+  title: string
+}
 
-const DashboardCard = ({ children, title }) => {
+const DashboardCard = ({ children, title }: IDashboardCard) => {
   return (
     <div className="card-div">
       <div className="card-header">{title}</div>

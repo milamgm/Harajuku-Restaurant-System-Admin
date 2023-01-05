@@ -1,16 +1,23 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { AiFillDashboard } from "react-icons/Ai";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { MdDoneOutline, MdCancel, MdFastfood } from "react-icons/Md";
 import { Nav } from "react-bootstrap";
 import { NavLink, useLocation } from "react-router-dom";
-const Sidebar = ({showSidebar, setShowSidebar}) => {
 
+interface SidebarProps {
+  showSidebar: boolean;
+  setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Sidebar = ({ showSidebar, setShowSidebar }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
   const splitLocation = pathname.split("/");
   return (
-    <aside className={`sidebar ${showSidebar === true ? "active" : "isClosed"}`}>
+    <aside
+      className={`sidebar ${showSidebar === true ? "active" : "isClosed"}`}
+    >
       <div className="sidebar-content">
         <div className="sidebar-links">
           <Nav.Link
@@ -55,7 +62,19 @@ const Sidebar = ({showSidebar, setShowSidebar}) => {
         </div>
       </div>
       <div className="sidebar-footer">
-        <h4>{showSidebar ? (<IoChevronBack style={{cursor: "pointer"}} onClick={() => setShowSidebar(prev => !prev)} />) : (<IoChevronForward style={{cursor: "pointer"}} onClick={() => setShowSidebar(prev => !prev)} />)}</h4>
+        <h4>
+          {showSidebar ? (
+            <IoChevronBack
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowSidebar((prev) => !prev)}
+            />
+          ) : (
+            <IoChevronForward
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowSidebar((prev) => !prev)}
+            />
+          )}
+        </h4>
       </div>
     </aside>
   );

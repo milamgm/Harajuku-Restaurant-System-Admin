@@ -1,37 +1,15 @@
 import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Accordion, Col, Container, Row, Table } from "react-bootstrap";
 import { IOrder } from "../types/types";
 import db from "../firebase/firebaseConfig";
+import { Accordion, Col, monate, Row, Table, weekDays } from "../utils";
 
 const DeletedOrders = () => {
   const [deletedOrders, setDeletedOrders] = useState<IOrder[]>([]);
   const ordersPerArrival = [...deletedOrders].sort((a, b) => {
     return Number(new Date(b.time)) - Number(new Date(a.time));
   });
-  const weekDays = [
-    "Sontag",
-    "Montag",
-    "Dienstag",
-    "Mittwoch",
-    "Donnerstag",
-    "Freitag",
-    "Samstag",
-  ];
-  const monate = [
-    "Januar",
-    "Februar",
-    "März",
-    "April",
-    "Mai",
-    "Juni",
-    "Juli",
-    "August",
-    "September",
-    "Oktober",
-    "November",
-    "Dezember",
-  ];
+
   useEffect(() => {
     onSnapshot(collection(db, "deletedOrders"), (snapshot) => {
       setDeletedOrders([]);

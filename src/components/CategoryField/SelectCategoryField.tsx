@@ -20,6 +20,8 @@ const SelectCategoryField = ({
     categories,
     setCategories,
   } = useAppContext();
+
+  //Fetches categories from database
   useEffect(() => {
     if (initFetchCategories === false) {
       onSnapshot(collection(db, "categories"), (snapshot) => {

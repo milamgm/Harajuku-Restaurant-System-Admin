@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { setDoc, doc } from "firebase/firestore";
-import { ref, uploadBytes, getStorage } from "firebase/storage";
 import { IFormTarget, IProduct } from "../types/types";
 import {
   AddCategoryField,
@@ -8,15 +7,14 @@ import {
   db,
   FiCamera,
   Form,
-  FormControl,
   GalleryWidget,
   Modal,
   SelectCategoryField,
   toast,
   Toaster,
   useAppContext,
-  v4,
 } from "../utils";
+import { createImgPath, previewImg } from "../storageFetches";
 
 interface EditProductProps {
   editProductBtn: boolean;
@@ -30,7 +28,6 @@ const EditProduct = ({
   editProduct,
 }: EditProductProps) => {
   const { addCategoryField, setAddCategoryField } = useAppContext();
-  const storage = getStorage();
   const {
     product_id,
     product_name,
@@ -59,42 +56,16 @@ const EditProduct = ({
     setPrice(num);
   };
 
-  //Creates a local image url to show preview
-  const previewImg = (e: React.ComponentProps<typeof FormControl>) => {
-    const imgFile = e.target.files[0];
-    const localURL = URL.createObjectURL(imgFile);
-    setProductImg(localURL);
-  };
-
   //Updates the product in the database
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as typeof e.target & IFormTarget;
-    if (target.img.files[0] !== undefined) {
-      //creates a path in case a new image has been uploaded
-      const imgUpload = target.img.files[0];
-      const imgName = imgUpload.name + v4();
-      const imgRef = ref(storage, `products/${imgName}`);
-      uploadBytes(imgRef, imgUpload);
-      path = `${
-        import.meta.env.VITE_APP_FIREBASE_IMG_PATH + imgName
-      }?alt=media`;
-    }
+    //creates a path in case a new image has been uploaded
+    createImgPath(target, path);
 
     //updates the database
-    const addToDB = async () => {
-      await setDoc(doc(db, "products", target.id.value), {
-        product_id: target.id.value,
-        product_img: path !== "" ? path : productImg,
-        product_name: productName,
-        product_price: Number(price),
-        product_description: productDescription,
-        product_category: productCategory,
-        product_isAvailable: true,
-      });
-    };
     try {
-      addToDB();
+      addToDB(target, path, productImg, productName, productCategory, price);
       setEditProductBtn(false);
     } catch (error) {
       console.error(error);
@@ -155,7 +126,7 @@ const EditProduct = ({
                     name="img"
                     type="file"
                     accept=".jpg, .jpeg, .png"
-                    onChange={(e) => previewImg(e)}
+                    onChange={(e) => previewImg(e, setProductImg)}
                   />
                 </div>
               </Form.Group>
@@ -221,3 +192,22 @@ const EditProduct = ({
 };
 
 export default EditProduct;
+
+const addToDB = async (
+  target: IFormTarget,
+  path: string,
+  productImg: string,
+  productName: string,
+  productCategory: string,
+  price: number
+) => {
+  await setDoc(doc(db, "products", target.id.value), {
+    product_id: target.id.value,
+    product_img: path !== "" ? path : productImg,
+    product_name: productName,
+    product_price: price,
+    product_description: productImg,
+    product_category: productCategory,
+    product_isAvailable: true,
+  });
+};

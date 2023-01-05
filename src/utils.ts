@@ -25,7 +25,7 @@ import AddCategoryField from "./components/CategoryField/AddCategoryField.js";
 import SelectCategoryField from "./components/CategoryField/SelectCategoryField.js";
 import GalleryWidget from "./components/GalleryWidget";
 import { FiCamera } from "react-icons/Fi";
-
+import { IFormTarget } from "./types/types";
 
 export {
   BiPlus,
@@ -92,3 +92,22 @@ const monate = [
   "November",
   "Dezember",
 ];
+
+//Changes the first letter of the words in the string to uppercase
+export const toUpperCaseString = (str: string) => {
+  let upperStr;
+  if (str.indexOf(" ")) {
+    const categoryArr = str.split(" ");
+    let arr = [];
+    for (const word of categoryArr) {
+      const first = word.charAt(0).toUpperCase();
+      const upperWord = `${first}${word.slice(1)}`;
+      arr.push(upperWord);
+    }
+    upperStr = arr.join(" ");
+  } else {
+    const first = str.charAt(0).toUpperCase();
+    upperStr = `${first}${str.slice(1)}`;
+  }
+  return upperStr;
+};

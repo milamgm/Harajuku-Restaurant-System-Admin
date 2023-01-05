@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { setDoc, doc } from "firebase/firestore";
-import { ref, uploadBytes, getStorage } from "firebase/storage";
 import db from "../firebase/firebaseConfig";
 import { IFormTarget } from "../types/types";
 import {
   useAppContext,
-  FormControl,
-  v4,
   Modal,
   Form,
   Button,
@@ -16,6 +13,7 @@ import {
   GalleryWidget,
   toast,
 } from "../utils";
+import { createImgPath, previewImg } from "../storageFetches";
 
 interface PropsInterface {
   addProductBtn: boolean;
@@ -25,7 +23,6 @@ interface PropsInterface {
 const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
   const { addCategoryField, setAddCategoryField } = useAppContext();
   const [price, setPrice] = useState("");
-  const storage = getStorage();
   const [productImg, setProductImg] = useState("");
   const [openGalleryBtn, setOpenGalleryBtn] = useState(false);
   let path = "";
@@ -40,41 +37,15 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
     setPrice(num);
   };
 
-  //Creates a local image url to show preview
-  const previewImg = (e: React.ComponentProps<typeof FormControl>) => {
-    const imgFile = e.target.files && e.target.files[0];
-    const localURL = imgFile ? URL.createObjectURL(imgFile) : "";
-    setProductImg(localURL);
-  };
-
   //Updates the product in the database
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as typeof e.target & IFormTarget;
     //creates a path in case a new image has been uploaded
-    if (target.img.files[0] !== undefined) {
-      const imgUpload = target.img.files[0];
-      const imgName = imgUpload.name + v4();
-      const imgRef = ref(storage, `products/${imgName}`);
-      uploadBytes(imgRef, imgUpload);
-      path = `${
-        import.meta.env.VITE_APP_FIREBASE_IMG_PATH + imgName
-      }?alt=media`;
-    }
+    createImgPath(target, path);
     //updates the database
-    const addToDB = async () => {
-      await setDoc(doc(db, "products", target.id.value), {
-        product_id: target.id.value,
-        product_img: path !== "" ? path : productImg,
-        product_name: target.name.value,
-        product_price: Number(price),
-        product_description: target.description.value,
-        product_category: target.category.value,
-        product_isAvailable: true,
-      });
-    };
     try {
-      addToDB();
+      addToDB(target, path, productImg, price);
       setAddProductBtn(false);
     } catch (error) {
       console.error(error);
@@ -140,7 +111,7 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
                     name="img"
                     type="file"
                     className="mt-3"
-                    onChange={(e) => previewImg(e)}
+                    onChange={(e) => previewImg(e, setProductImg)}
                   />
                 </div>
               </Form.Group>
@@ -204,3 +175,20 @@ const AddProduct = ({ addProductBtn, setAddProductBtn }: PropsInterface) => {
 };
 
 export default AddProduct;
+
+const addToDB = async (
+  target: IFormTarget,
+  path: string,
+  productImg: string,
+  price: string
+) => {
+  await setDoc(doc(db, "products", target.id.value), {
+    product_id: target.id.value,
+    product_img: path !== "" ? path : productImg,
+    product_name: target.name.value,
+    product_price: Number(price),
+    product_description: target.description.value,
+    product_category: target.category.value,
+    product_isAvailable: true,
+  });
+};

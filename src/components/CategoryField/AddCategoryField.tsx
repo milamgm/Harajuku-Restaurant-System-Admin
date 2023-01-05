@@ -3,18 +3,15 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { doc, setDoc } from "firebase/firestore";
 import db from "../../firebase/firebaseConfig";
 import toast, { Toaster } from "react-hot-toast";
+import { toUpperCaseString } from "../../utils";
 
 const AddCategoryField = () => {
   const [newCategory, setNewCategory] = useState("");
 
   const handleAddCategory = () => {
+    const upperCased = toUpperCaseString(newCategory);
     try {
-      const addToDB = async () => {
-        await setDoc(doc(db, "categories", newCategory), {
-          category_name: newCategory,
-        });
-      };
-      addToDB();
+      addToDB(upperCased);
       setNewCategory("");
       toast.success("Category successfully added!");
     } catch (error) {
@@ -46,3 +43,9 @@ const AddCategoryField = () => {
 };
 
 export default AddCategoryField;
+
+const addToDB = async (newCategory: string) => {
+  await setDoc(doc(db, "categories", newCategory), {
+    category_name: newCategory,
+  });
+};

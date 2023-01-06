@@ -11,11 +11,11 @@ export interface IAppContext {
   setCategories: React.Dispatch<React.SetStateAction<ICategory[]>>;
   addCategoryField: boolean;
   setAddCategoryField: React.Dispatch<React.SetStateAction<boolean>>;
-  completedOrders: IOrder[]
+  completedOrders: IOrder[];
 }
 
-interface ICategory{
-  category_name : string
+interface ICategory {
+  category_name: string;
 }
 
 export interface IOrder {
@@ -40,13 +40,11 @@ export interface IProduct {
   product_isAvailable: boolean;
 }
 export interface IFormTarget {
-  
-    id: { value: string };
-    name: { value: string };
-    img: { files: File[] };
-    price: { value: number };
-    description: { value: string };
-    category: { value: string };
-    isAvailable: { value: boolean };
-  
+  id: { value: string };
+  name: { value: string };
+  img: { files: File[] };
+  price: { value: number };
+  description: { value: string };
+  category: { value: string };
+  isAvailable: { value: boolean };
 }

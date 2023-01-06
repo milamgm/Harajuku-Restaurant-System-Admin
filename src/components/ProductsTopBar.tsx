@@ -1,8 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap";
 import { toast } from "react-hot-toast";
-import { BiExport, BiHide, BiImport, BiPlus } from "react-icons/Bi";
+import { BiHide, BiImport, BiPlus } from "react-icons/Bi";
 import { MdDelete } from "react-icons/Md";
-import SearchField from "./components/SearchField";
 
 interface ProductsTopBarProps {
   setAddProductBtn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,11 +37,7 @@ const ProductsTopBar = ({
         >
           <BiImport /> Import Products
         </Button>{" "}
-        <Button className="mt-1" variant="dark">
-          <BiExport /> Export Products
-        </Button>{" "}
       </Col>
-      <SearchField />
     </Row>
     <div className="mt-5">
       <div className="d-flex justify-content-end mb-2">

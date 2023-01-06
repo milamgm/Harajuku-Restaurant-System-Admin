@@ -20,8 +20,6 @@ const AppContext = ({ children }: AppContextProps) => {
   const [addCategoryField, setAddCategoryField] = useState(false);
   const [completedOrders, setCompletedOrders] = useState<IOrder[]>([]);
 
-  
-
   const AppContextValues = {
     setInitFetchProducts,
     initFetchProducts,
@@ -33,7 +31,7 @@ const AppContext = ({ children }: AppContextProps) => {
     setCategories,
     addCategoryField,
     setAddCategoryField,
-    completedOrders
+    completedOrders,
   };
   useEffect(() => {
     onSnapshot(collection(db, "completedOrders"), (snapshot) => {
@@ -43,7 +41,7 @@ const AppContext = ({ children }: AppContextProps) => {
       });
     });
   }, []);
-  
+
   return (
     <context.Provider value={AppContextValues}>{children}</context.Provider>
   );

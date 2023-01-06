@@ -19,7 +19,7 @@ import Loading from "./components/Loading";
 import ImportProducts from "./components/ImportProducts";
 import ShowProductImageModal from "./components/ShowProductImageModal";
 import ProductsTable from "./components/ProductsTable";
-import ProductsTopBar from "./ProductsTopBar";
+import ProductsTopBar from "./components/ProductsTopBar";
 import { v4 } from "uuid";
 import AddCategoryField from "./components/CategoryField/AddCategoryField.js";
 import SelectCategoryField from "./components/CategoryField/SelectCategoryField.js";

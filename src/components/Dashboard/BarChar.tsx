@@ -54,7 +54,7 @@ const BarChar = ({ labelsQ, dataQ, color }: BarCharProps) => {
     },
   };
 
-  const labels = labelsQ; //["Mon", "Die", "Mie", "Don", "Fre", "Sam", "Son"];
+  const labels = labelsQ;
   const data: IData = {
     labels,
     datasets: [

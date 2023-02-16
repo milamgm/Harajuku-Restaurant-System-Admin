@@ -5,10 +5,14 @@ import { Accordion, Col, monate, Row, Table, weekDays } from "../utils";
 const CompletedOrders = () => {
   const { completedOrders }: IAppContext = useAppContext();
   const ordersPerArrival = [...completedOrders].sort((a, b) => {
-    return Number(new Date(b.time)) - Number(new Date(a.time));
+    return (
+      new Date(b.time.seconds * 1000).valueOf() -
+      new Date(a.time.seconds * 1000).valueOf()
+    );
   });
   return (
     <div style={{ paddingBottom: "200px" }}>
+      <h2 className="mb-5 w-25">Completed Orders</h2>
       {ordersPerArrival &&
         ordersPerArrival.map(({ order_id, table_num, time, items }: IOrder) => (
           <Accordion flush className="border" key={order_id}>
@@ -17,14 +21,7 @@ const CompletedOrders = () => {
                 Order #{order_id}
                 <span className="ms-auto">Table {table_num}</span>
                 <small className="ms-auto text-muted">
-                  {weekDays[new Date(time).getDay()]},&nbsp;
-                  {new Date(time).getDate()}.&nbsp;
-                  {monate[new Date(time).getMonth()]}&nbsp;
-                  {new Date(time).getFullYear()}&nbsp;um&nbsp;
-                  {new Date(time).toLocaleString("de-DE", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {time.toDate().toLocaleString("gb-GB")}
                 </small>
               </Accordion.Header>
               <Accordion.Body>

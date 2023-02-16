@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 import React from "react";
 
 export interface IAppContext {
@@ -21,7 +22,7 @@ interface ICategory {
 export interface IOrder {
   order_id: string;
   table_num: number;
-  time: Date;
+  time: Timestamp;
   items: ItemTypes[];
 }
 export interface IItem {

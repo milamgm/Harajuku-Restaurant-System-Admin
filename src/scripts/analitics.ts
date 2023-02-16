@@ -13,11 +13,11 @@ export interface IAnalytics {
   bestDishes: { [dish: string]: number };
   weekdays: number[];
   dayHours: IDayHours;
-  profit:  IProfit;
+  profit: IProfit;
 }
 
-export const getAnalytics = (completedOrders : IOrder[]) => {
-  let analytics : IAnalytics = {
+export const getAnalytics = (completedOrders: IOrder[]) => {
+  let analytics: IAnalytics = {
     bestDishes: {},
     weekdays: [],
     dayHours: [],
@@ -38,12 +38,12 @@ export const getAnalytics = (completedOrders : IOrder[]) => {
 
   completedOrders.map((order) => {
     //weekdays
-    const weekday = new Date(order.time).getDay();
+    const weekday = order.time.toDate().getDay();
     weekdays[weekday] += 1;
     updatedWeekdays = weekdays;
 
     //dayHours
-    const dayHour = new Date(order.time).getHours();
+    const dayHour = order.time.toDate().getHours();
     dayHours[dayHour] += 1;
 
     //Best Dishes
@@ -57,7 +57,7 @@ export const getAnalytics = (completedOrders : IOrder[]) => {
 
     //Profit
     order.items.map((item) => {
-      const month = new Date(order.time).getMonth();
+      const month = order.time.toDate().getMonth();
       profitMonth += item.price;
       profit[month + 1] = profitMonth;
     });

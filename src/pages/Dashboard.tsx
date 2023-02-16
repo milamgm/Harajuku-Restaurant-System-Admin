@@ -30,7 +30,7 @@ const Dashboard = () => {
                 />
               </div>
             </DashboardCard>
-            <DashboardCard title="Hauptverkehrszeit">
+            <DashboardCard title="Peak hours">
               <div className="card-chart-div">
                 <LineCharC
                   labelsQ={Object.keys(analitics.dayHours)}
@@ -41,7 +41,7 @@ const Dashboard = () => {
             </DashboardCard>
           </Col>
           <Col xs="12" sm="8" lg="6" xl="6">
-            <DashboardCard title="Am Meisten Gekauft">
+            <DashboardCard title="Bestsellers">
               <div className="card-chart-div">
                 <BarChar
                   labelsQ={Object.keys(analitics.bestDishes)}
@@ -50,10 +50,10 @@ const Dashboard = () => {
                 />
               </div>
             </DashboardCard>
-            <DashboardCard title="Wochentage">
+            <DashboardCard title="Weekdays">
               <div className="card-chart-div">
                 <BarChar
-                  labelsQ={["Mon", "Die", "Mie", "Don", "Fre", "Sam", "Son"]}
+                  labelsQ={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
                   dataQ={analitics.weekdays}
                   color="blue"
                 />

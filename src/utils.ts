@@ -70,27 +70,10 @@ const productInitialState = {
 };
 
 const weekDays = [
-  "Sontag",
-  "Montag",
-  "Dienstag",
-  "Mittwoch",
-  "Donnerstag",
-  "Freitag",
-  "Samstag",
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 ];
 const monate = [
-  "Januar",
-  "Februar",
-  "März",
-  "April",
-  "Mai",
-  "Juni",
-  "Juli",
-  "August",
-  "September",
-  "Oktober",
-  "November",
-  "Dezember",
+  "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ];
 
 //Changes the first letter of the words in the string to uppercase
